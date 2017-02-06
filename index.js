@@ -1,3 +1,7 @@
-import vdom from './src/index'
+import {h, render} from './src/index'
 
-window.vdom = vdom
+let foo = <div id="foo">Hello!</div>
+
+let el = render(foo)
+
+document.body.appendChild(el)

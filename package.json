@@ -4,7 +4,8 @@
   "description": "a virtual dom exercise",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "webpack-dev-server --open"
   },
   "repository": {
     "type": "git",
@@ -23,7 +24,9 @@
     "babel": "^6.5.2",
     "babel-core": "^6.22.1",
     "babel-loader": "^6.2.10",
+    "babel-plugin-transform-react-jsx": "^6.22.0",
     "babel-preset-es2015": "^6.22.0",
-    "webpack": "^2.2.0"
+    "webpack": "^2.2.0",
+    "webpack-dev-server": "^2.3.0"
   }
 }

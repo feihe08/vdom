@@ -1,7 +1,12 @@
-import VNode from './vnode'
-import render from './render'
+import { h } from './h'
+import { render } from './render'
 
 export default {
-  VNode,
+  h,
+  render
+}
+
+export {
+  h,
   render
 }

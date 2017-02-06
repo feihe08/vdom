@@ -11,7 +11,7 @@ export function render(vnode) {
 
   for (let key in vnode.attributes) {
     let value = vnode.attributes[key]
-    el.setAttribute(attribute, value)
+    el.setAttribute(key, value)
   }
 
   vnode.children
