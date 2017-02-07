@@ -7,8 +7,10 @@ const diffTypes = {
 
 export function patch(oldTree, patches){
   let index
-  
+  dfsWalk()
 }
 
-function dfsWalk()
+function dfsWalk(node, ) {
+  // TODO: 新增的节点怎么处理
 
+}

@@ -33,11 +33,12 @@ function dfsWalk(oldNode, newNode, index, patches, currentPatch){
     if(propsPatches){
       currentPatch.push({type: diffTypes.PROPS, context: propsPatches})
     }
+    // TODO: 新增节点怎么处理
     diffChildren(oldNode.children, newNode.children, index, patches, currentPatch)
   }else {
     currentPatch.push({type: diffTypes.REPLACE, context: newNode})
   }
-  
+
   if(currentPatch.length){
     patches[index] = currentPatch
   }
@@ -70,5 +71,3 @@ function diffChildren(oldChildren, newChildren, index, patches, currentPatch){
     dfsWalk(child, oldChild, index, patches, currentPatch)
   })
 }
-
-
