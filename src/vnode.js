@@ -1,6 +1,4 @@
 /**
- * 
- * 
  * @export
  * @param {any} nodeName
  * @param {any} attributes

@@ -2,6 +2,13 @@ import {vnode} from './vnode'
 
 const stack = []
 
+
+/**
+ * @export
+ * @param {any} nodeName
+ * @param {any} attributes
+ * @returns
+ */
 export function h(nodeName, attributes){
   let children = [], child, i
 
