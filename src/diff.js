@@ -1,10 +1,5 @@
-import {
-  isString,
-  isUndefined
-} from './util'
-import {
-  vnode
-} from './vnode'
+import { isString, isUndefined } from './util'
+import { vnode } from './vnode'
 
 
 function isVnode(vnode) {
@@ -26,7 +21,7 @@ export function diff(oldNode, newNode) {
 
 function patchVnode(oldNode, newNode) {
   diffProps(oldNode, newNode)
-  diffChildren(oldNode.children, newNode.children)
+  diffChildren(oldNode, newNode)
 }
 
 function diffProps(oldNode, newNode) {
@@ -51,8 +46,21 @@ function diffProps(oldNode, newNode) {
   }
 }
 
-function diffChildren(oldCh, newCh) {
+function diffChildren(oldNode, newNode) {
   let reusltCh,
-    oldStartIdx = newStartIdx = 0
+    oldStartIdx = newStartIdx = 0,
+    oldCh = oldNode.children, newCh = newNode.children
+  //todo children的diff算法
   
+}
+
+function oldKeyToIdx(ch) {
+  let i, map = {}, key
+  for (var i = 0; i < ch.length; ++i) {
+    key = ch.key
+    if (key !== undefined) {
+      map[key] = i
+    }    
+  }
+  return map
 }
