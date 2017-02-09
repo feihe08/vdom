@@ -1,5 +1,6 @@
 import { isString, isUndefined } from './util'
 import { vnode } from './vnode'
+import { createElm } from './createElm'
 
 
 function isVnode(vnode) {
@@ -12,6 +13,7 @@ function sameNode(vnode1, vnode2) {
 
 
 export function diff(oldNode, newNode) {
+  //todo 初始化时vnode的生成
   if (sameNode(oldNode, newNode)) {
     return patchVnode(oldNode, newNode)
   } else {
