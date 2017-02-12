@@ -12,6 +12,7 @@ import {h, diff} from './src/index'
 let foo = <div id="foo">Hello</div>
 
 let container = document.querySelector('#container')
+console.log(foo);
 
 diff(container, foo)
 
@@ -19,6 +20,3 @@ diff(container, foo)
 let bar = <div id="bar">Vdom</div>
 
 diff(foo, bar)
-
-
-

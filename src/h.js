@@ -28,7 +28,6 @@ export function h(nodeName, attributes){
       children.push(child)
     }
   }
-  let p = new vnode(nodeName, attributes || undefined, children || [])
-
+  let p = new vnode(nodeName, attributes || undefined, children || [], undefined)
   return p
 }
