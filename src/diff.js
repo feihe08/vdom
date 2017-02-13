@@ -9,8 +9,8 @@ function isVnode(vNode) {
 function sameVnode(vnode1, vnode2) {
   let id1 = vnode1.attributes ? vnode1.attributes.id : undefined
   let id2 = vnode2.attributes ? vnode2.attributes.id : undefined
-  let classList1 = vnode1.attributes ? vnode1.attributes['class'] : undefined
-  let classList2 = vnode2.attributes ? vnode2.attributes['class'] : undefined
+  let classList1 = vnode1.attributes ? vnode1.attributes.class : undefined
+  let classList2 = vnode2.attributes ? vnode2.attributes.class : undefined
   return vnode1.nodeName === vnode2.nodeName
     && vnode1.key === vnode2.key
     && id1 === id2
