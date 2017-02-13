@@ -46,7 +46,6 @@ function emptyVnode(elm) {
 
 
 export function diff(oldVnode, newVnode) {
-  console.log(oldVnode, newVnode)
   // const insertVnodeQueue = []
   let parent
   let elm
