@@ -7,16 +7,34 @@ import {h, diff} from './src/index'
  * 初始化的时候接受一个dom容器，一个vnode
  * 在diff内部处理都没的更新
  * 整体结构类似于snabbdom
+ * todo 
+ * text和element节点如何处理
  */
 
-let foo = <div id="foo">Hello</div>
+let foo = (
+  <div id="foo">
+    <ul>
+      <li>1</li>
+      <li>2</li>
+      <li>3</li>
+    </ul>
+  </div>
+)
 
 let container = document.querySelector('#container')
-console.log(foo);
 
 diff(container, foo)
 
 
-let bar = <div id="bar">Vdom</div>
+let bar  = (
+  <div id="foo" style="color:red;">
+    <ul>
+      <li>2</li>
+      <li>3</li>
+    </ul>
+  </div>
+)
+setTimeout(function() {
+  diff(foo, bar)  
+}, 2000);
 
-diff(foo, bar)

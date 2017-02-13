@@ -2,38 +2,51 @@ import { isString, isUndefined, isArray } from './util'
 import { vnode } from './vnode'
 
 
-function isVnode(vnode) {
-  return vnode.tagNeme !== undefined
+function isVnode(vNode) {
+  return vNode instanceof vnode
 }
 
 function sameNode(vnode1, vnode2) {
-  return vnode1.tagNeme === vnode2.tagNeme && vnode1.key === vnode2.key
+  return vnode1.nodeName === vnode2.nodeName
+    && vnode1.key === vnode2.key
+    && vnode1.attributes.id === vnode2.attributes.id
 }
 
 function createElm(vnode) {
-  let tagName = vnode.tagName,
-    children = vnode.children,
-    child, childElm, elm, i
-  elm = document.createElement(tagName)
+  let nodeName = vnode.nodeName,
+    attrs = vnode.attributes,
+    vCh = vnode.children,
+    text = vnode.text,
+    vChild, child, elm, i
+  elm = document.createElement(nodeName)
   setAttributes(elm, attrs)
-  for (i = 0; i < children.length; ++i) {
-    child = children[i]
-    childElm = isString(child) ? document.createTextNode(child) : createElm(child)
-    elm.appendChild(childElm)
+  if(text){
+    elm.appendChild(document.createTextNode(text))
+  }
+  for (i = 0; i < vCh.length; ++i) {
+    vChild = vCh[i]
+    if(vChild){
+      child = createElm(vChild)
+      elm.appendChild(child)
+    }
   }
   vnode.elm = elm
+  return elm
 }
 
 function emptyVnode(elm) {
-  let tagName = elm.tagName.toLowerCase()
-  return vnode(tagName, {}, [], elm);
+  let nodeName = elm.tagName.toLowerCase()
+  return new vnode(nodeName, {}, [], undefined, elm);
 }
 
 
 export function diff(oldVnode, newVnode) {
-  const insertVnodeQueue = [], parent, elm
+  console.log(oldVnode, newVnode)
+  // const insertVnodeQueue = []
+  let parent
+  let elm
   //如果第一个参数不是vnode
-  if (isVnode(oldVnode)) {
+  if (!isVnode(oldVnode)) {
     oldVnode = emptyVnode(oldVnode)
   }
   if (sameNode(oldVnode, newVnode)) {
@@ -42,9 +55,8 @@ export function diff(oldVnode, newVnode) {
     elm = oldVnode.elm
     parent = elm.parentNode
     createElm(newVnode)
-    if (parent !== null) {
-      parent.insertBefore(newVnode.elm, oldVnode.elm)
-      parent.removeChild(oldVnode.elm)
+    if (parent) {
+      parent.replaceChild(newVnode.elm, oldVnode.elm)
     }
   }
   return newVnode
@@ -52,13 +64,25 @@ export function diff(oldVnode, newVnode) {
 
 function patchVnode(oldVnode, newVnode) {
   let elm = oldVnode.elm
-  if(oldVnode === newVnode) return
-  diffProps(elm, oldVnode, newVnode)
-  diffChildren(oldVnode, newVnode)
+  if (!newVnode.text) {
+    newVnode.elm = elm
+    let oldProps = oldVnode.attributes,
+      newProps = newVnode.attributes,
+      oldCh = oldVnode.children,
+      newCh = newVnode.children
+    if (oldProps !== newProps) {
+      diffProps(elm, oldVnode, newVnode)
+    }
+    if (oldCh !== newCh) {
+      diffChildren(elm, oldVnode, newVnode)
+    }
+  } else if (oldVnode.text !== newVnode.text) {
+    elm.textContent = newVnode.text  
+  }
 }
 
 function diffProps(elm, oldVnode, newVnode) {
-  let key, old, cur
+  let key, old, cur,
     oldAttrs = oldVnode.attributes,
     newAttrs = newVnode.attributes
 
@@ -81,6 +105,63 @@ function diffProps(elm, oldVnode, newVnode) {
     }
   }
 }
+function diffChildren(elm, oldCh, newCh) {
+  let oldStartIdx = 0,
+    oldEndIdx = oldCh.length - 1,
+    oldStartVnode = oldCh[0],
+    oldEndVnode = oldCh[oldEndIdx],
+    newStartIdx = 0,
+    newEndIdx = newCh.length - 1,
+    newStartVnode = newCh[0],
+    newEndVnode = newCh[newEndIdx],
+    oldKeyToIdx, idxInOld, elmToMove, before
+  while (oldStartIdx <= oldEndIdx && newStartIdx <= newEndIdx) {
+    if (isUndefined(oldStartVnode)) {
+      oldStartVnode = oldCh[++oldStartIdx]; // Vnode has been moved left
+    } else if (isUndefined(oldEndVnode)) {
+      oldEndVnode = oldCh[--oldEndIdx];
+    } else if (sameVnode(oldStartVnode, newStartVnode)) {
+      patchVnode(oldStartVnode, newStartVnode);
+      oldStartVnode = oldCh[++oldStartIdx];
+      newStartVnode = newCh[++newStartIdx];
+    } else if (sameVnode(oldEndVnode, newEndVnode)) {
+      patchVnode(oldEndVnode, newEndVnode);
+      oldEndVnode = oldCh[--oldEndIdx];
+      newEndVnode = newCh[--newEndIdx];
+    } else if (sameVnode(oldStartVnode, newEndVnode)) { // Vnode moved right
+      patchVnode(oldStartVnode, newEndVnode);
+      parentElm.insertBefore(oldStartVnode.elm, oldEndVnode.elm.nextSibling);
+      oldStartVnode = oldCh[++oldStartIdx];
+      newEndVnode = newCh[--newEndIdx];
+    } else if (sameVnode(oldEndVnode, newStartVnode)) { // Vnode moved left
+      patchVnode(oldEndVnode, newStartVnode);
+      parentElm.insertBefore(oldEndVnode.elm, oldStartVnode.elm);
+      oldEndVnode = oldCh[--oldEndIdx];
+      newStartVnode = newCh[++newStartIdx];
+    } else {
+      if (isUndefined(oldKeyToIdx)) oldKeyToIdx = createKeyToOldIdx(oldCh, oldStartIdx, oldEndIdx);
+      idxInOld = oldKeyToIdx[newStartVnode.key];
+      if (isUndefined(idxInOld)) { // New element
+        parentElm.insertBefore(createElm(newStartVnode), oldStartVnode.elm);
+        newStartVnode = newCh[++newStartIdx];
+      } else {
+        elmToMove = oldCh[idxInOld];
+        patchVnode(elmToMove, newStartVnode);
+        oldCh[idxInOld] = undefined;
+        parentElm.insertBefore(elmToMove.elm, oldStartVnode.elm);
+        newStartVnode = newCh[++newStartIdx];
+      }
+    }
+  }
+  if (oldStartIdx > oldEndIdx) {
+    before = isUndefined(newCh[newEndIdx + 1]) ? null : newCh[newEndIdx + 1].elm;
+    addVnodes(parentElm, before, newCh, newStartIdx, newEndIdx, insertedVnodeQueue);
+  } else if (newStartIdx > newEndIdx) {
+    removeVnodes(parentElm, oldCh, oldStartIdx, oldEndIdx);
+  }
+
+
+}
 
 function setAttributes(elm, attrs) {
   let p
@@ -89,21 +170,26 @@ function setAttributes(elm, attrs) {
   }
 }
 
-function diffChildren(oldVnode, newVnode) {
-  let reusltCh,
-    oldStartIdx = newStartIdx = 0,
-    oldCh = oldVnode.children, newCh = newVnode.children
-  //todo children的diff算法
-
+function createKeyToOldIdx(children, beginIdx, endIdx) {
+  var i, map = {}, key;
+  for (i = beginIdx; i <= endIdx; ++i) {
+    key = children[i].key;
+    if (key) map[key] = i;
+  }
+  return map;
 }
 
-function oldKeyToIdx(ch) {
-  let i, map = {}, key
-  for (i = 0; i < ch.length; ++i) {
-    key = ch.key
-    if (key !== undefined) {
-      map[key] = i
+function addVnodes(parentElm, before, vnodes, startIdx, endIdx, insertedVnodeQueue) {
+  for (; startIdx <= endIdx; ++startIdx) {
+    parentElm.insertBefore(createElm(vnodes[startIdx], insertedVnodeQueue), before);
+  }
+}
+
+function removeVnodes(parentElm, vnodes, startIdx, endIdx) {
+  for (; startIdx <= endIdx; ++startIdx) {
+    var ch = vnodes[startIdx];
+    if (ch) {
+      parentElm.removeChild(ch.elm);
     }
   }
-  return map
 }
