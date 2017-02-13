@@ -6,10 +6,15 @@ function isVnode(vNode) {
   return vNode instanceof vnode
 }
 
-function sameNode(vnode1, vnode2) {
+function sameVnode(vnode1, vnode2) {
+  let id1 = vnode1.attributes ? vnode1.attributes.id : undefined
+  let id2 = vnode2.attributes ? vnode2.attributes.id : undefined
+  let classList1 = vnode1.attributes ? vnode1.attributes['class'] : undefined
+  let classList2 = vnode2.attributes ? vnode2.attributes['class'] : undefined
   return vnode1.nodeName === vnode2.nodeName
     && vnode1.key === vnode2.key
-    && vnode1.attributes.id === vnode2.attributes.id
+    && id1 === id2
+    && classList1 === classList2
 }
 
 function createElm(vnode) {
@@ -49,7 +54,7 @@ export function diff(oldVnode, newVnode) {
   if (!isVnode(oldVnode)) {
     oldVnode = emptyVnode(oldVnode)
   }
-  if (sameNode(oldVnode, newVnode)) {
+  if (sameVnode(oldVnode, newVnode)) {
     patchVnode(oldVnode, newVnode)
   } else {
     elm = oldVnode.elm
@@ -63,6 +68,7 @@ export function diff(oldVnode, newVnode) {
 }
 
 function patchVnode(oldVnode, newVnode) {
+  //todo 
   let elm = oldVnode.elm
   if (!newVnode.text) {
     newVnode.elm = elm
@@ -74,7 +80,7 @@ function patchVnode(oldVnode, newVnode) {
       diffProps(elm, oldVnode, newVnode)
     }
     if (oldCh !== newCh) {
-      diffChildren(elm, oldVnode, newVnode)
+      diffChildren(elm, oldVnode.children, newVnode.children)
     }
   } else if (oldVnode.text !== newVnode.text) {
     elm.textContent = newVnode.text  
@@ -105,7 +111,7 @@ function diffProps(elm, oldVnode, newVnode) {
     }
   }
 }
-function diffChildren(elm, oldCh, newCh) {
+function diffChildren(parentElm, oldCh, newCh) {
   let oldStartIdx = 0,
     oldEndIdx = oldCh.length - 1,
     oldStartVnode = oldCh[0],
@@ -155,7 +161,7 @@ function diffChildren(elm, oldCh, newCh) {
   }
   if (oldStartIdx > oldEndIdx) {
     before = isUndefined(newCh[newEndIdx + 1]) ? null : newCh[newEndIdx + 1].elm;
-    addVnodes(parentElm, before, newCh, newStartIdx, newEndIdx, insertedVnodeQueue);
+    addVnodes(parentElm, before, newCh, newStartIdx, newEndIdx);
   } else if (newStartIdx > newEndIdx) {
     removeVnodes(parentElm, oldCh, oldStartIdx, oldEndIdx);
   }
@@ -179,9 +185,9 @@ function createKeyToOldIdx(children, beginIdx, endIdx) {
   return map;
 }
 
-function addVnodes(parentElm, before, vnodes, startIdx, endIdx, insertedVnodeQueue) {
+function addVnodes(parentElm, before, vnodes, startIdx, endIdx) {
   for (; startIdx <= endIdx; ++startIdx) {
-    parentElm.insertBefore(createElm(vnodes[startIdx], insertedVnodeQueue), before);
+    parentElm.insertBefore(createElm(vnodes[startIdx]), before);
   }
 }
 
