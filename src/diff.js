@@ -67,7 +67,6 @@ export function diff(oldVnode, newVnode) {
 }
 
 function patchVnode(oldVnode, newVnode) {
-  //todo 
   let elm = oldVnode.elm
   if (!newVnode.text) {
     newVnode.elm = elm

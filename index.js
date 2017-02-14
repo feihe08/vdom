@@ -8,7 +8,9 @@ import {h, diff} from './src/index'
  * 在diff内部处理都没的更新
  * 整体结构类似于snabbdom
  * todo 
- * text和element节点如何处理
+ * text节点和子节点并存的情况要不要考虑
+ * 不特殊对待text节点改如何做
+ * 
  */
 
 let foo = (
@@ -37,4 +39,7 @@ let bar  = (
 setTimeout(function() {
   diff(foo, bar)  
 }, 2000);
+
+con
+
 
