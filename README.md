@@ -1,4 +1,4 @@
 # vdom
-a simole vurtual dom
+a simple vurtual dom
 
 ## 
