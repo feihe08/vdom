@@ -38,4 +38,4 @@ let bar  = (
 )
 setTimeout(function() {
   diff(foo, bar)  
-}, 2000);
+}, 1000);
