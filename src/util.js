@@ -8,6 +8,5 @@ export function isUndefined(param) {
 
 export function isArray(param) {
   return Array.isArray(param)
-  
-}
 
+}

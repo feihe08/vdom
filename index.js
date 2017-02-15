@@ -7,10 +7,8 @@ import {h, diff} from './src/index'
  * 初始化的时候接受一个dom容器，一个vnode
  * 在diff内部处理都没的更新
  * 整体结构类似于snabbdom
- * todo 
- * text节点和子节点并存的情况要不要考虑
- * 不特殊对待text节点改如何做
- * 
+ * 对text节点进行特殊处理，不将其算在children里，简化diff过程
+ *
  */
 
 let foo = (
@@ -37,5 +35,5 @@ let bar  = (
   </div>
 )
 setTimeout(function() {
-  diff(foo, bar)  
+  diff(foo, bar)
 }, 1000);
