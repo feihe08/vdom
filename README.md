@@ -1,5 +1,5 @@
 # vdom
-a simple virtual dom
+a simple virtual dom, inspired by [snabbdom](https://github.com/snabbdom/snabbdom)
 
 ## 参考
 [wft-is-jsx](https://jasonformat.com/wtf-is-jsx/)
