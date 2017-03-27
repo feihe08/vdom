@@ -1,5 +1,5 @@
 # vdom
-a simple vurtual dom
+a simple virtual dom
 
 ## 参考
 [wft-is-jsx](https://jasonformat.com/wtf-is-jsx/)
